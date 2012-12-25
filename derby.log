@@ -1,6 +1,6 @@
 ----------------------------------------------------------------
-Mon Dec 24 16:09:11 GMT 2012:
-Booting Derby version The Apache Software Foundation - Apache Derby - 10.8.2.2 - (1181258): instance a816c00e-013b-cdac-cb6d-000004787ee8 
+Tue Dec 25 23:41:07 GMT 2012:
+Booting Derby version The Apache Software Foundation - Apache Derby - 10.8.2.2 - (1181258): instance a816c00e-013b-d470-e933-00000478ecf8 
 on database directory /Users/jasonkarp/Documents/Warwick/Third_Year_Project/Timetabling/timetabling/TimetableInput  with class loader sun.misc.Launcher$AppClassLoader@69cd2e5f 
 Loaded from file:/Users/jasonkarp/Documents/eclipse/plugins/org.apache.derby.core_10.8.2/derby.jar
 java.vendor=Apple Inc.
@@ -8,3 +8,6 @@ java.runtime.version=1.6.0_37-b06-434-11M3909
 user.dir=/Users/jasonkarp/Documents/Warwick/Third_Year_Project/Timetabling/timetabling
 derby.system.home=null
 Database Class Loader started - derby.database.classpath=''
+----------------------------------------------------------------
+Tue Dec 25 23:41:12 GMT 2012:
+Shutting down instance a816c00e-013b-d470-e933-00000478ecf8 on database directory /Users/jasonkarp/Documents/Warwick/Third_Year_Project/Timetabling/timetabling/TimetableInput with class loader sun.misc.Launcher$AppClassLoader@69cd2e5f 
