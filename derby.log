@@ -1,6 +1,6 @@
 ----------------------------------------------------------------
-Sun Feb 10 22:54:09 GMT 2013:
-Booting Derby version The Apache Software Foundation - Apache Derby - 10.8.2.2 - (1181258): instance a816c00e-013c-c650-c9f6-0000044a61e0 
+Thu Feb 21 18:08:16 GMT 2013:
+Booting Derby version The Apache Software Foundation - Apache Derby - 10.8.2.2 - (1181258): instance a816c00e-013c-fdf0-fe9f-0000044921b8 
 on database directory /Users/jasonkarp/Documents/Warwick/Third_Year_Project/Timetabling/timetabling/TimetableInput  with class loader sun.misc.Launcher$AppClassLoader@1d9f953d 
 Loaded from file:/Applications/eclipse/plugins/org.apache.derby.core_10.8.2/derby.jar
 java.vendor=Apple Inc.
