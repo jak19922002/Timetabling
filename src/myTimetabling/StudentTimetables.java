@@ -77,7 +77,7 @@ public class StudentTimetables extends JFrame implements ActionListener
 		JTable table = new JTable(model);
 		table.setModel(model);
 	    table.setRowHeight(40);
-		table.setPreferredScrollableViewportSize(new Dimension(800, 200));
+		table.setPreferredScrollableViewportSize(new Dimension(1000, 200));
 	    table.setDefaultRenderer(StudentModel.class, new MultiLineCellRenderer());
 	    table.setFillsViewportHeight(true);
 	   
@@ -85,14 +85,15 @@ public class StudentTimetables extends JFrame implements ActionListener
 	    TableCellRenderer jTableCellRenderer = new TableCellRenderer() 
 	    {
 	    	/* These are necessary variables to store the row's height */
-	    	private int minHeight = -1;
-	    	private int currHeight = -1;
+	    	//private int minHeight = -1;
+	    	//private int currHeight = -1;
 	    	
 	    	@SuppressWarnings("serial")
 			public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,int row, int column) 
 	    	{
 	    	/* If what we're displaying isn't an array of values we
 	    	return the normal renderer*/
+	    		
 		    	if(!value.getClass().isArray())
 		    	{
 		    		return table.getDefaultRenderer(value.getClass()).getTableCellRendererComponent(table, value, isSelected, hasFocus,row, column);
@@ -103,7 +104,7 @@ public class StudentTimetables extends JFrame implements ActionListener
 			    	/* We calculate the row's height to display data
 			    	* THis is not complete and has some bugs that
 			    	* will be analyzed in further articles */
-			    	if(minHeight == -1)
+			    /*	if(minHeight == -1)
 			    	{
 			    		minHeight = table.getRowHeight();
 			    	}
@@ -111,7 +112,7 @@ public class StudentTimetables extends JFrame implements ActionListener
 			    	{
 				    	currHeight = passed.length * minHeight;
 				    	table.setRowHeight(row,currHeight);
-			    	}
+			    	}*/
 	    	
 			    	/* We create the table that will hold the multivalue
 			    	 *fields and that will be embedded in the main table */

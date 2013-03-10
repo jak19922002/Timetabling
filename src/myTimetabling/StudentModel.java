@@ -40,7 +40,7 @@ public class StudentModel extends AbstractTableModel
 			String[] temp = new String[2];
 			temp[0] = lessonsCanTeach.getString(1);
 			temp[1] = lessonsCanTeach.getString(2);
-			data[row][col] = temp;
+			data[row-1][col] = temp;
 		}
 		access.stmt.close();
 		} catch(SQLException e) {}
@@ -65,6 +65,12 @@ public class StudentModel extends AbstractTableModel
 	    }
 	    public Object getValueAt(int row, int col) 
 	    {
+	    	if(col == 0)
+	    		return rows[row];
+	    	
+	    	if(data[row][col] == null)
+	    		return "";
+	    	
 	    	return data[row][col];
 	    }
 	    public boolean isCellEditable(int row, int col)
