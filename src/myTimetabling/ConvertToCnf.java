@@ -46,7 +46,9 @@ public ConvertToCnf(int numPeriodsInDay) throws IOException
 	    
 	    ConvertToCnf.numPeriodsInDay = numPeriodsInDay;
 	    
-		/*constraint3(out);
+	    /*out.write("p cnf " + numLessons*numTeachers*numPeriods + " " + 597);
+	    out.newLine();
+		constraint3(out);
 	    constraint4(out);
 		constraint1(out); //Unfortunately have to run constraints twice, first time to work out
 		constraint2(out); //the number of clauses.
@@ -70,7 +72,7 @@ public ConvertToCnf(int numPeriodsInDay) throws IOException
 	    constraint6(output);	    
 	    //constraint7(output);
 	    //constraint8(output);
-	    //updatedConstraint7(output);
+	    updatedConstraint7(output);
 	    //updatedConstraint8(output);
 	    studentConstraint1(output);
 	    studentConstraint2(output);
@@ -99,28 +101,26 @@ public ConvertToCnf(int numPeriodsInDay) throws IOException
 //Every teacher can have at most one lesson on the same period
 public void constraint1(BufferedWriter out) throws SQLException, IOException
 {	
-
-	for(int teacher = 1; teacher <= numTeachers; teacher++)  //for every teacher
-	{
-		for(int lesson : access.getLessonsCanTeach(teacher)) 
-		{
-			for(int secondLesson : access.getLessonsCanTeach(teacher))  //compare every two lessons
-			{
-				if(lesson >= secondLesson) //such that the first lesson is always smaller than the second in terms of ID number
-					continue;
+   for(int teacher = 1; teacher <= numTeachers; teacher++)  //for every teacher
+   {
+	 for(int lesson : access.getLessonsCanTeach(teacher)) 
+	 {
+	   for(int secondLesson : access.getLessonsCanTeach(teacher))  //compare every two lessons
+	   {
+		 if(lesson >= secondLesson)
+			continue;
 				
-				for(int period : access.getAvailablePeriods(teacher))  //for every teacher
-				{
-					int first = period + numPeriods*(teacher-1) + PT*(lesson-1);  //converts period,teacher,lesson into single integer
-					int second = period + numPeriods*(teacher-1) + PT*(secondLesson-1); //converts period,teacher,secondlesson into single integer
+		 for(int period : access.getAvailablePeriods(teacher))  //for every teacher
+		 {
+			int first = period + numPeriods*(teacher-1) + PT*(lesson-1);  //Formula conversion to integer
+			int second = period + numPeriods*(teacher-1) + PT*(secondLesson-1); 
 					
-					out.write("-" + first + " -" + second + " 0");	//writes negative of integer to InputFile.txt				
-					out.newLine();
-					count++;
-				}
-				
-			}
-		}
+			out.write("-" + first + " -" + second + " 0");	//writes negative of integer to InputFile.txt				
+			out.newLine();
+			count++;
+		  }	
+	    }
+	  }
 	}
 	System.out.println(count);
 }
@@ -250,83 +250,82 @@ public void constraint5(BufferedWriter out) throws SQLException, IOException
 //Lessons belonging to the same teaching group should be distributed s.t. no lesson appears on the same day
 public void constraint6(BufferedWriter out) throws SQLException, IOException
 {	
-
-	for(int teachingGroup = 1; teachingGroup <= numTeachingGroups; teachingGroup++)
+  for(int teachingGroup = 1; teachingGroup <= numTeachingGroups; teachingGroup++)
+  {
+	if(access.getLessonsInTeachingGroup(teachingGroup).size() == 0)
+	  continue;
+	
+	for(int lesson : access.getLessonsInTeachingGroup(teachingGroup)) 
 	{
-		if(access.getLessonsInTeachingGroup(teachingGroup).size() == 0)
-			continue;
-		
-		for(int lesson : access.getLessonsInTeachingGroup(teachingGroup)) 
-		{
-			for(int secondLesson : access.getLessonsInTeachingGroup(teachingGroup))  //compare every two lessons
+	  for(int secondLesson : access.getLessonsInTeachingGroup(teachingGroup))  //compare every two lessons
+	  {
+		if(lesson >= secondLesson) //such that the first lesson is always smaller than the second in terms of ID number
+		  continue;
+			
+		for(int teacher : access.getTeachersSubject(teachingGroup))  //for every teacher
+		{  
+		  for(int secondTeacher : access.getTeachersSubject(teachingGroup))
+	   	  {
+			if(teacher > secondTeacher)
+			  continue;
+					
+			for(int period : access.getAvailablePeriods(teacher))  //for every teacher
 			{
-				if(lesson >= secondLesson) //such that the first lesson is always smaller than the second in terms of ID number
+			  for(int secondPeriod : access.getAvailablePeriods(secondTeacher))  //for every teacher
+			  {
+				if(teacher == secondTeacher && period >= secondPeriod) //preventing duplicates
+				  continue;
+							
+				if(teacher != secondTeacher && period > secondPeriod && access.getAvailablePeriods(teacher).contains(secondPeriod))
+				  continue;  //if the two different sets of periods have two matching periods, would cause a duplicate
+							
+				if(access.dist(period, secondPeriod, numPeriodsInDay) == 0 || period > secondPeriod)
+				{			
+				  if(access.dist(period, secondPeriod, numPeriodsInDay) != 0)  //Need to do this since could have p=4 and p'=1, which dist!=0 
+					continue;						 //so would skip rest but next could be p=4,p'=3, which dist=0
+								
+				  /* 4 different group combinations can occur */
+				  int first = period + numPeriods*(teacher-1) + PT*(lesson-1);  //converts period,teacher,lesson into single integer
+		  		  int second = secondPeriod + numPeriods*(secondTeacher-1) + PT*(secondLesson-1); //converts period,teacher,secondlesson into single integer
+								
+				  out.write("-" + first + " -" + second + " 0");	//writes negative of integer to InputFile.txt				
+				  out.newLine();
+				  count++;
+								
+				  int third = secondPeriod + numPeriods*(secondTeacher-1) + PT*(lesson-1); 
+				  int fourth = period + numPeriods*(teacher-1) + PT*(secondLesson-1); 
+								
+				  out.write("-" + third + " -" + fourth + " 0");				
+				  out.newLine();
+				  count++;
+								
+				  if(teacher == secondTeacher || period == secondPeriod)  //prevent duplicates
 					continue;
-				
-				for(int teacher : access.getTeachersSubject(teachingGroup))  //for every teacher
-				{  
-					for(int secondTeacher : access.getTeachersSubject(teachingGroup))
-					{
-						if(teacher > secondTeacher)
-							continue;
-						
-						for(int period : access.getAvailablePeriods(teacher))  //for every teacher
-						{
-							for(int secondPeriod : access.getAvailablePeriods(secondTeacher))  //for every teacher
-							{
-								if(teacher == secondTeacher && period >= secondPeriod) //preventing duplicates
-									continue;
 								
-								if(teacher != secondTeacher && period > secondPeriod && access.getAvailablePeriods(teacher).contains(secondPeriod))
-									continue;  //if the two different sets of periods have two matching periods, would cause a duplicate
+				  int fifth = period + numPeriods*(secondTeacher-1) + PT*(lesson-1);  
+				  int sixth = secondPeriod + numPeriods*(teacher-1) + PT*(secondLesson-1); 
 								
-								if(access.dist(period, secondPeriod, numPeriodsInDay) == 0 || period > secondPeriod)
-								{			
-									if(access.dist(period, secondPeriod, numPeriodsInDay) != 0)  //Need to do this since could have p=4 and p'=1, which dist!=0 
-										continue;						 //so would skip rest but next could be p=4,p'=3, which dist=0
-									
-									/* 4 different group combinations can occur */
-									int first = period + numPeriods*(teacher-1) + PT*(lesson-1);  //converts period,teacher,lesson into single integer
-									int second = secondPeriod + numPeriods*(secondTeacher-1) + PT*(secondLesson-1); //converts period,teacher,secondlesson into single integer
-									
-									out.write("-" + first + " -" + second + " 0");	//writes negative of integer to InputFile.txt				
-									out.newLine();
-									count++;
-									
-									int third = secondPeriod + numPeriods*(secondTeacher-1) + PT*(lesson-1);  //converts period,teacher,lesson into single integer
-									int fourth = period + numPeriods*(teacher-1) + PT*(secondLesson-1); //converts period,teacher,secondlesson into single integer
-									
-									out.write("-" + third + " -" + fourth + " 0");	//writes negative of integer to InputFile.txt				
-									out.newLine();
-									count++;
-									
-									if(teacher == secondTeacher || period == secondPeriod)  //prevent duplicates
-										continue;
-									
-									int fifth = period + numPeriods*(secondTeacher-1) + PT*(lesson-1);  //converts period,teacher,lesson into single integer
-									int sixth = secondPeriod + numPeriods*(teacher-1) + PT*(secondLesson-1); //converts period,teacher,secondlesson into single integer
-									
-									out.write("-" + fifth + " -" + sixth + " 0");	//writes negative of integer to InputFile.txt				
-									out.newLine();
-									count++;
-									
-									int seventh = secondPeriod + numPeriods*(teacher-1) + PT*(lesson-1);  //converts period,teacher,lesson into single integer
-									int eighth = period + numPeriods*(secondTeacher-1) + PT*(secondLesson-1); //converts period,teacher,secondlesson into single integer
-									
-									out.write("-" + seventh + " -" + eighth + " 0");	//writes negative of integer to InputFile.txt				
-									out.newLine();
-									count++;
-								}
-								else
-									break;  //since next period comparison will have a bigger difference than the previous comparison
-							}				//clearly won't be on the same day hence skip entire loop.
-						}
-					}
+				  out.write("-" + fifth + " -" + sixth + " 0");					
+				  out.newLine();
+			  	  count++;
+								
+				  int seventh = secondPeriod + numPeriods*(teacher-1) + PT*(lesson-1); 
+				  int eighth = period + numPeriods*(secondTeacher-1) + PT*(secondLesson-1); 
+								
+				  out.write("-" + seventh + " -" + eighth + " 0");					
+				  out.newLine();
+				  count++;
 				}
-			}
-		}
+				else
+				  break;  //since next period comparison will have a bigger difference than the previous comparison
+			  }				//clearly won't be on the same day hence skip entire loop.
+		    }
+		  }
+	    }
+	  }
 	}
-	System.out.println(count);
+  }
+  System.out.println(count);
 }
 /*
 //Teachers teaching hours must be at least a minimum
